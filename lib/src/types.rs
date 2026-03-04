@@ -280,6 +280,11 @@ pub struct ProofInputs {
     /// Verifies L2 state via L1's L2OutputOracle.
     #[serde(default)]
     pub l2_storage_proof: Option<L2StorageProofInputs>,
+    /// Optional block inclusion proof inputs.
+    /// Verifies a chain of execution block headers linked by parent_hash,
+    /// anchored to a known trusted block hash.
+    #[serde(default)]
+    pub block_inclusion: Option<crate::block_inclusion::BlockInclusionProofInputs>,
 }
 
 // =============================================================================

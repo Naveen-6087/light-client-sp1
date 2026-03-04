@@ -9,6 +9,7 @@
 
 #[cfg(feature = "bls")]
 pub mod bls;
+pub mod block_inclusion;
 pub mod config;
 pub mod consensus;
 pub mod cross_chain;
@@ -48,5 +49,14 @@ sol! {
         uint32 numL2StorageSlots;
         /// L2 state root (zero if no L2 proof).
         bytes32 l2StateRoot;
+        /// Number of verified block hashes from block inclusion proof.
+        uint32 numVerifiedBlocks;
+        /// First block number in the verified chain (0 if no block inclusion proof).
+        uint64 blockInclusionStart;
+        /// Last block number in the verified chain (0 if no block inclusion proof).
+        uint64 blockInclusionEnd;
+        /// Keccak256 hash of all verified (blockNumber, blockHash) pairs.
+        /// On-chain contract uses this to verify individual block hash submissions.
+        bytes32 blockHashCommitment;
     }
 }

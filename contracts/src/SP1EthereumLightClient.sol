@@ -37,6 +37,10 @@ contract SP1EthereumLightClient {
         bytes32 storageProofStorageRoot;
         uint32 numL2StorageSlots;
         bytes32 l2StateRoot;
+        uint32 numVerifiedBlocks;
+        uint64 blockInclusionStart;
+        uint64 blockInclusionEnd;
+        bytes32 blockHashCommitment;
     }
 
     // =========================================================================
@@ -83,6 +87,10 @@ contract SP1EthereumLightClient {
     /// @notice Latest verified L2 state roots per finalized slot.
     mapping(uint64 => bytes32) public verifiedL2StateRoots;
 
+    /// @notice Verified block hash commitments per finalized slot.
+    /// @dev Each commitment is keccak256(abi.encodePacked(blockNum1, hash1, ...))
+    mapping(uint64 => bytes32) public blockHashCommitments;
+
     // =========================================================================
     // Events
     // =========================================================================
@@ -122,6 +130,15 @@ contract SP1EthereumLightClient {
         uint64 indexed slot,
         bytes32 l2StateRoot,
         uint32 numSlots
+    );
+
+    /// @notice Emitted when a block inclusion proof is verified.
+    event BlockInclusionVerified(
+        uint64 indexed slot,
+        uint64 startBlock,
+        uint64 endBlock,
+        uint32 numBlocks,
+        bytes32 commitment
     );
 
     // =========================================================================
@@ -312,6 +329,18 @@ contract SP1EthereumLightClient {
                 pv.numL2StorageSlots
             );
         }
+
+        // Store block hash commitment if present
+        if (pv.numVerifiedBlocks > 0) {
+            blockHashCommitments[pv.finalizedSlot] = pv.blockHashCommitment;
+            emit BlockInclusionVerified(
+                pv.finalizedSlot,
+                pv.blockInclusionStart,
+                pv.blockInclusionEnd,
+                pv.numVerifiedBlocks,
+                pv.blockHashCommitment
+            );
+        }
     }
 
     // =========================================================================
@@ -378,5 +407,12 @@ contract SP1EthereumLightClient {
     /// @return The L2 state root, or bytes32(0) if not proven.
     function getVerifiedL2StateRoot(uint64 slot) external view returns (bytes32) {
         return verifiedL2StateRoots[slot];
+    }
+
+    /// @notice Get the block hash commitment at a finalized slot.
+    /// @param slot The finalized slot.
+    /// @return The block hash commitment, or bytes32(0) if none.
+    function getBlockHashCommitment(uint64 slot) external view returns (bytes32) {
+        return blockHashCommitments[slot];
     }
 }

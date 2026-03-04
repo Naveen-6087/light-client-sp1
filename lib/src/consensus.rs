@@ -418,6 +418,7 @@ mod tests {
             fork_version: [0x90, 0x00, 0x00, 0x74],
             storage_proof: None,
             l2_storage_proof: None,
+            block_inclusion: None,
         }
     }
 

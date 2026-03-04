@@ -133,6 +133,7 @@ fn create_mock_inputs() -> ProofInputs {
         fork_version,
         storage_proof: None,
         l2_storage_proof: None,
+        block_inclusion: None,
     }
 }
 
